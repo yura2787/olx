@@ -10,10 +10,10 @@ SYSTEM_PROMPT = (
 
 class ClaudeClient:
     def __init__(self) -> None:
-        self._client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        self._client = anthropic.AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
 
-    def _ask(self, prompt: str) -> str:
-        message = self._client.messages.create(
+    async def _ask(self, prompt: str) -> str:
+        message = await self._client.messages.create(
             model=CLAUDE_MODEL,
             max_tokens=2048,
             system=SYSTEM_PROMPT,
@@ -31,7 +31,7 @@ class ClaudeClient:
             "🔒 Проблеми безпеки\n"
             "💡 Конкретні пропозиції виправлення"
         )
-        return self._ask(prompt)
+        return await self._ask(prompt)
 
     async def explain_code(self, code: str, lang: str) -> str:
         prompt = (
@@ -42,7 +42,7 @@ class ClaudeClient:
             "🔍 Як працює крок за кроком\n"
             "📦 Які бібліотеки/паттерни використовує"
         )
-        return self._ask(prompt)
+        return await self._ask(prompt)
 
     async def optimize_code(self, code: str, lang: str) -> str:
         prompt = (
@@ -54,7 +54,7 @@ class ClaudeClient:
             "🏗️ Структурі та best practices\n\n"
             "Надай покращену версію коду з поясненням змін."
         )
-        return self._ask(prompt)
+        return await self._ask(prompt)
 
     async def improve_code(self, code: str, lang: str) -> str:
         prompt = (
@@ -64,4 +64,4 @@ class ClaudeClient:
             "✨ Покращену версію\n"
             "📝 Що саме і чому змінив"
         )
-        return self._ask(prompt)
+        return await self._ask(prompt)
