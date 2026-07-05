@@ -1,46 +1,75 @@
 # AI Code Assistant Bot
 
-Telegram бот для аналізу коду на базі Claude AI.
+A Telegram bot that reviews, explains, and improves code using Groq AI (Llama 3.3 70B).
 
-## Структура
+## Features
+
+- 🐛 **Bug Review** — finds bugs, security issues, and potential problems
+- ✨ **Code Improvement** — suggests better structure and quality
+- 📖 **Explain Code** — breaks down what the code does in plain English
+- ⚡ **Optimize** — improves performance and readability
+- 🛡️ **Rate Limiting** — protects against spam (5 requests / 60s per user)
+- 🌐 **Auto Language Detection** — supports Python, JS, TS, Go, Rust, Java, SQL, HTML, CSS
+
+## Tech Stack
+
+- **Python 3.13**
+- **aiogram 3** — Telegram bot framework
+- **Groq API** — LLM inference (Llama 3.3 70B)
+- **Docker** — containerized deployment
+- **uv** — package management
+
+## Project Structure
 
 ```
-code-assistant-bot/
 ├── bot/
 │   ├── handlers/
-│   │   ├── start.py          # /start команда
-│   │   ├── code_review.py    # пошук багів
-│   │   ├── explain.py        # пояснення коду
-│   │   └── optimize.py       # оптимізація коду
+│   │   ├── start.py          # /start command and back navigation
+│   │   ├── code_review.py    # bug finder
+│   │   ├── explain.py        # code explainer
+│   │   ├── optimize.py       # optimizer
+│   │   └── improve.py        # code improver
 │   ├── services/
-│   │   └── claude_client.py  # Claude API клієнт
+│   │   └── claude_client.py  # Groq API client
 │   ├── keyboards/
-│   │   └── inline.py         # inline кнопки
+│   │   └── inline.py         # inline keyboards
 │   ├── middlewares/
-│   │   └── rate_limiter.py   # захист від спаму
+│   │   └── rate_limiter.py   # request rate limiting
 │   ├── utils/
-│   │   └── code_parser.py    # визначення мови коду
+│   │   └── code_parser.py    # language detection and code extraction
 │   └── main.py
 ├── config.py
 ├── Dockerfile
 ├── docker-compose.yml
-├── requirements.txt
-├── .env.example
-└── .env
+├── pyproject.toml
+└── .env.example
 ```
 
-## Запуск
+## Setup
 
 ```bash
-cp .env.example .env
-# заповни BOT_TOKEN і ANTHROPIC_API_KEY в .env
+git clone <repo-url>
+cd code-assistant-bot
 
-pip install -r requirements.txt
-python -m bot.main
+cp .env.example .env
+# fill in BOT_TOKEN and GROQ_API_KEY in .env
+
+uv sync
+uv run python -m bot.main
 ```
 
 ## Docker
 
 ```bash
-docker compose up -d
+docker compose up -d --build
+docker compose logs -f
 ```
+
+## Environment Variables
+
+| Variable | Description |
+|---|---|
+| `BOT_TOKEN` | Telegram bot token from [@BotFather](https://t.me/BotFather) |
+| `GROQ_API_KEY` | Groq API key from [console.groq.com](https://console.groq.com) |
+| `RATE_LIMIT_REQUESTS` | Max requests per window (default: 5) |
+| `RATE_LIMIT_WINDOW` | Time window in seconds (default: 60) |

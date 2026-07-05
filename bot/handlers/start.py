@@ -7,7 +7,7 @@ from bot.keyboards.inline import main_menu
 
 router = Router()
 
-MAIN_TEXT = "👋 Привіт! Я бот для аналізу коду на базі Groq AI.\n\nЩо хочеш зробити з кодом?"
+MAIN_TEXT = "👋 Hi! I'm a code review bot powered by Groq AI.\n\nWhat do you want to do with your code?"
 
 
 @router.message(CommandStart())
