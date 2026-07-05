@@ -12,3 +12,9 @@ def main_menu() -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="⚡ Оптимізувати", callback_data="optimize"),
         ],
     ])
+
+
+def back_button() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="⬅️ Назад", callback_data="back")],
+    ])

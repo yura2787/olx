@@ -11,21 +11,21 @@ from config import MAX_CODE_LENGTH
 router = Router()
 
 
-class OptimizeStates(StatesGroup):
+class ImproveStates(StatesGroup):
     waiting_for_code = State()
 
 
-@router.callback_query(F.data == "optimize")
+@router.callback_query(F.data == "improve")
 async def ask_for_code(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.message.edit_text(
-        "⚡ Надішли код — оптимізую продуктивність та читабельність.",
+        "✨ Надішли код — покращу структуру та якість.",
         reply_markup=back_button(),
     )
-    await state.set_state(OptimizeStates.waiting_for_code)
+    await state.set_state(ImproveStates.waiting_for_code)
     await callback.answer()
 
 
-@router.message(OptimizeStates.waiting_for_code)
+@router.message(ImproveStates.waiting_for_code)
 async def handle_code(message: Message, state: FSMContext) -> None:
     code, hint = extract_code(message.text or "")
 
@@ -39,10 +39,10 @@ async def handle_code(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     lang = detect_language(code, hint)
-    status = await message.answer("⚡ Оптимізую...")
+    status = await message.answer("✨ Покращую...")
 
     try:
-        result = await groq_client.optimize_code(code, lang)
+        result = await groq_client.improve_code(code, lang)
         await status.edit_text(result, reply_markup=back_button())
     except Exception:
         await status.edit_text("❌ Помилка при зверненні до AI. Спробуй ще раз.", reply_markup=back_button())

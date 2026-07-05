@@ -15,14 +15,20 @@ _LANG_PATTERNS: list[tuple[str, list[str]]] = [
 _CODE_BLOCK_RE = re.compile(r"```(\w+)?\n?([\s\S]+?)```")
 
 
-def extract_code(text: str) -> str:
+def extract_code(text: str) -> tuple[str, str | None]:
+    """Повертає (код, мова_або_None)."""
     match = _CODE_BLOCK_RE.search(text)
     if match:
-        return match.group(2).strip()
-    return text.strip()
+        lang_hint = match.group(1)
+        code = match.group(2).strip()
+        return code, lang_hint
+    return text.strip(), None
 
 
-def detect_language(code: str) -> str:
+def detect_language(code: str, hint: str | None = None) -> str:
+    if hint:
+        return hint
+
     scores: dict[str, int] = {}
     for lang, patterns in _LANG_PATTERNS:
         scores[lang] = sum(1 for p in patterns if re.search(p, code))

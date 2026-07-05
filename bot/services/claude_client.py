@@ -1,5 +1,5 @@
-import anthropic
-from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
+from groq import AsyncGroq
+from config import GROQ_API_KEY, GROQ_MODEL
 
 SYSTEM_PROMPT = (
     "Ти — досвідчений senior розробник. Відповідай українською мовою. "
@@ -10,19 +10,21 @@ SYSTEM_PROMPT = (
 
 class ClaudeClient:
     def __init__(self) -> None:
-        self._client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        self._client = AsyncGroq(api_key=GROQ_API_KEY)
 
-    def _ask(self, prompt: str) -> str:
-        message = self._client.messages.create(
-            model=CLAUDE_MODEL,
+    async def _ask(self, prompt: str) -> str:
+        response = await self._client.chat.completions.create(
+            model=GROQ_MODEL,
             max_tokens=2048,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
         )
-        return message.content[0].text
+        return response.choices[0].message.content
 
     async def review_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Проведи code review цього {lang} коду.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Знайди:\n"
@@ -31,10 +33,9 @@ class ClaudeClient:
             "🔒 Проблеми безпеки\n"
             "💡 Конкретні пропозиції виправлення"
         )
-        return self._ask(prompt)
 
     async def explain_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Поясни цей {lang} код простими словами.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Структуруй відповідь:\n"
@@ -42,10 +43,9 @@ class ClaudeClient:
             "🔍 Як працює крок за кроком\n"
             "📦 Які бібліотеки/паттерни використовує"
         )
-        return self._ask(prompt)
 
     async def optimize_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Оптимізуй цей {lang} код.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Зосередься на:\n"
@@ -54,14 +54,16 @@ class ClaudeClient:
             "🏗️ Структурі та best practices\n\n"
             "Надай покращену версію коду з поясненням змін."
         )
-        return self._ask(prompt)
 
     async def improve_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Покращ цей {lang} код.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Запропонуй:\n"
             "✨ Покращену версію\n"
             "📝 Що саме і чому змінив"
         )
-        return self._ask(prompt)
+
+
+# один екземпляр на весь бот
+groq_client = ClaudeClient()
