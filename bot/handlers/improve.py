@@ -18,7 +18,7 @@ class ImproveStates(StatesGroup):
 @router.callback_query(F.data == "improve")
 async def ask_for_code(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.message.edit_text(
-        "✨ Надішли код — покращу структуру та якість.",
+        "✨ Send your code — I'll improve its structure and quality.",
         reply_markup=back_button(),
     )
     await state.set_state(ImproveStates.waiting_for_code)
@@ -30,19 +30,19 @@ async def handle_code(message: Message, state: FSMContext) -> None:
     code, hint = extract_code(message.text or "")
 
     if not code:
-        await message.answer("❌ Код не знайдено. Надішли текст або блок коду.", reply_markup=back_button())
+        await message.answer("❌ No code found. Send plain text or a code block.", reply_markup=back_button())
         return
 
     if len(code) > MAX_CODE_LENGTH:
-        await message.answer(f"❌ Код занадто довгий (максимум {MAX_CODE_LENGTH} символів).", reply_markup=back_button())
+        await message.answer(f"❌ Code is too long (max {MAX_CODE_LENGTH} characters).", reply_markup=back_button())
         return
 
     await state.clear()
     lang = detect_language(code, hint)
-    status = await message.answer("✨ Покращую...")
+    status = await message.answer("✨ Improving...")
 
     try:
         result = await groq_client.improve_code(code, lang)
         await status.edit_text(result, reply_markup=back_button())
     except Exception:
-        await status.edit_text("❌ Помилка при зверненні до AI. Спробуй ще раз.", reply_markup=back_button())
+        await status.edit_text("❌ AI error. Please try again.", reply_markup=back_button())

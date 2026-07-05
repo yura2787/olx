@@ -30,7 +30,7 @@ class RateLimitMiddleware(BaseMiddleware):
 
         if len(self._requests[user_id]) >= RATE_LIMIT_REQUESTS:
             wait = int(RATE_LIMIT_WINDOW - (now - self._requests[user_id][0]))
-            await event.answer(f"⏳ Забагато запитів. Зачекай {wait} сек.")
+            await event.answer(f"⏳ Too many requests. Please wait {wait} seconds.")
             return
 
         self._requests[user_id].append(now)

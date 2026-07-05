@@ -2,9 +2,9 @@ from groq import AsyncGroq
 from config import GROQ_API_KEY, GROQ_MODEL
 
 SYSTEM_PROMPT = (
-    "Ти — досвідчений senior розробник. Відповідай українською мовою. "
-    "Будь конкретним, стислим і практичним. "
-    "Використовуй emoji для структурування відповіді."
+    "You are an experienced senior software developer. "
+    "Be specific, concise and practical. "
+    "Use emoji to structure your response."
 )
 
 
@@ -25,45 +25,45 @@ class ClaudeClient:
 
     async def review_code(self, code: str, lang: str) -> str:
         return await self._ask(
-            f"Проведи code review цього {lang} коду.\n\n"
+            f"Do a code review of this {lang} code.\n\n"
             f"```{lang}\n{code}\n```\n\n"
-            "Знайди:\n"
-            "🐛 Баги та помилки\n"
-            "⚠️ Потенційні проблеми\n"
-            "🔒 Проблеми безпеки\n"
-            "💡 Конкретні пропозиції виправлення"
+            "Find:\n"
+            "🐛 Bugs and errors\n"
+            "⚠️ Potential issues\n"
+            "🔒 Security problems\n"
+            "💡 Concrete fix suggestions"
         )
 
     async def explain_code(self, code: str, lang: str) -> str:
         return await self._ask(
-            f"Поясни цей {lang} код простими словами.\n\n"
+            f"Explain this {lang} code in simple terms.\n\n"
             f"```{lang}\n{code}\n```\n\n"
-            "Структуруй відповідь:\n"
-            "📌 Що робить код загалом\n"
-            "🔍 Як працює крок за кроком\n"
-            "📦 Які бібліотеки/паттерни використовує"
+            "Structure your answer:\n"
+            "📌 What the code does overall\n"
+            "🔍 How it works step by step\n"
+            "📦 What libraries/patterns it uses"
         )
 
     async def optimize_code(self, code: str, lang: str) -> str:
         return await self._ask(
-            f"Оптимізуй цей {lang} код.\n\n"
+            f"Optimize this {lang} code.\n\n"
             f"```{lang}\n{code}\n```\n\n"
-            "Зосередься на:\n"
-            "⚡ Продуктивності\n"
-            "📖 Читабельності\n"
-            "🏗️ Структурі та best practices\n\n"
-            "Надай покращену версію коду з поясненням змін."
+            "Focus on:\n"
+            "⚡ Performance\n"
+            "📖 Readability\n"
+            "🏗️ Structure and best practices\n\n"
+            "Provide the improved version with an explanation of changes."
         )
 
     async def improve_code(self, code: str, lang: str) -> str:
         return await self._ask(
-            f"Покращ цей {lang} код.\n\n"
+            f"Improve this {lang} code.\n\n"
             f"```{lang}\n{code}\n```\n\n"
-            "Запропонуй:\n"
-            "✨ Покращену версію\n"
-            "📝 Що саме і чому змінив"
+            "Provide:\n"
+            "✨ Improved version\n"
+            "📝 What you changed and why"
         )
 
 
-# один екземпляр на весь бот
+# single instance shared across all handlers
 groq_client = ClaudeClient()
