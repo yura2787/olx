@@ -4,6 +4,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, Message
 
 from bot.services.claude_client import ClaudeClient
+from bot.keyboards.inline import back_button
 from bot.utils.code_parser import extract_code, detect_language
 from config import MAX_CODE_LENGTH
 
@@ -17,7 +18,10 @@ class ReviewStates(StatesGroup):
 
 @router.callback_query(F.data == "review")
 async def ask_for_code(callback: CallbackQuery, state: FSMContext) -> None:
-    await callback.message.edit_text("🐛 Надішли код — знайду баги та проблеми.")
+    await callback.message.edit_text(
+        "🐛 Надішли код — знайду баги та проблеми.",
+        reply_markup=back_button(),
+    )
     await state.set_state(ReviewStates.waiting_for_code)
     await callback.answer()
 
@@ -27,11 +31,11 @@ async def handle_code(message: Message, state: FSMContext) -> None:
     code = extract_code(message.text or "")
 
     if not code:
-        await message.answer("❌ Код не знайдено. Надішли текст або блок коду.")
+        await message.answer("❌ Код не знайдено. Надішли текст або блок коду.", reply_markup=back_button())
         return
 
     if len(code) > MAX_CODE_LENGTH:
-        await message.answer(f"❌ Код занадто довгий (максимум {MAX_CODE_LENGTH} символів).")
+        await message.answer(f"❌ Код занадто довгий (максимум {MAX_CODE_LENGTH} символів).", reply_markup=back_button())
         return
 
     await state.clear()
@@ -39,4 +43,4 @@ async def handle_code(message: Message, state: FSMContext) -> None:
     status = await message.answer("🔍 Аналізую код...")
 
     result = await claude.review_code(code, lang)
-    await status.edit_text(result)
+    await status.edit_text(result, reply_markup=back_button())

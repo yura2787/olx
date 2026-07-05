@@ -1,5 +1,5 @@
-import anthropic
-from config import ANTHROPIC_API_KEY, CLAUDE_MODEL
+from groq import AsyncGroq
+from config import GROQ_API_KEY, GROQ_MODEL
 
 SYSTEM_PROMPT = (
     "Ти — досвідчений senior розробник. Відповідай українською мовою. "
@@ -10,16 +10,18 @@ SYSTEM_PROMPT = (
 
 class ClaudeClient:
     def __init__(self) -> None:
-        self._client = anthropic.AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+        self._client = AsyncGroq(api_key=GROQ_API_KEY)
 
     async def _ask(self, prompt: str) -> str:
-        message = await self._client.messages.create(
-            model=CLAUDE_MODEL,
+        response = await self._client.chat.completions.create(
+            model=GROQ_MODEL,
             max_tokens=2048,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
         )
-        return message.content[0].text
+        return response.choices[0].message.content
 
     async def review_code(self, code: str, lang: str) -> str:
         prompt = (
