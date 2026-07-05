@@ -24,7 +24,7 @@ class ClaudeClient:
         return response.choices[0].message.content
 
     async def review_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Проведи code review цього {lang} коду.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Знайди:\n"
@@ -33,10 +33,9 @@ class ClaudeClient:
             "🔒 Проблеми безпеки\n"
             "💡 Конкретні пропозиції виправлення"
         )
-        return await self._ask(prompt)
 
     async def explain_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Поясни цей {lang} код простими словами.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Структуруй відповідь:\n"
@@ -44,10 +43,9 @@ class ClaudeClient:
             "🔍 Як працює крок за кроком\n"
             "📦 Які бібліотеки/паттерни використовує"
         )
-        return await self._ask(prompt)
 
     async def optimize_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Оптимізуй цей {lang} код.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Зосередься на:\n"
@@ -56,14 +54,16 @@ class ClaudeClient:
             "🏗️ Структурі та best practices\n\n"
             "Надай покращену версію коду з поясненням змін."
         )
-        return await self._ask(prompt)
 
     async def improve_code(self, code: str, lang: str) -> str:
-        prompt = (
+        return await self._ask(
             f"Покращ цей {lang} код.\n\n"
             f"```{lang}\n{code}\n```\n\n"
             "Запропонуй:\n"
             "✨ Покращену версію\n"
             "📝 Що саме і чому змінив"
         )
-        return await self._ask(prompt)
+
+
+# один екземпляр на весь бот
+groq_client = ClaudeClient()

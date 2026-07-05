@@ -18,6 +18,9 @@ class RateLimitMiddleware(BaseMiddleware):
         event: Message,
         data: dict[str, Any],
     ) -> Any:
+        if not event.from_user:
+            return await handler(event, data)
+
         user_id = event.from_user.id
         now = time.monotonic()
 
